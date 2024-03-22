@@ -8,7 +8,7 @@ import 'dart:io';
 
 Future<Database> _getDatabase() async {
   final dbPath = await sql.getDatabasesPath();
-  return await sql.openDatabase(
+  final db = await sql.openDatabase(
     path.join(dbPath, 'places.db'),
     onCreate: (db, version) {
       return db.execute(
@@ -16,6 +16,7 @@ Future<Database> _getDatabase() async {
     },
     version: 1,
   );
+  return db;
 }
 
 class FavoritePlacesNotifier extends StateNotifier<List<Place>> {

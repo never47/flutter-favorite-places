@@ -43,16 +43,17 @@ class _PlacesScreen extends ConsumerState<PlacesScreen> {
         ],
       ),
       body: Padding(
-          padding: const EdgeInsets.all(8),
-          child: FutureBuilder(
-            future: _placesFuture,
-            builder: (context, snapshot) =>
-                snapshot.connectionState == ConnectionState.waiting
-                    ? const Center(child: CircularProgressIndicator())
-                    : PlacesList(
-                        places: userPlaces,
-                      ),
-          )),
+        padding: const EdgeInsets.all(8),
+        child: FutureBuilder(
+          future: _placesFuture,
+          builder: (context, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? const Center(child: CircularProgressIndicator())
+                  : PlacesList(
+                      places: userPlaces,
+                    ),
+        ),
+      ),
     );
   }
 }
