@@ -1,4 +1,5 @@
 import 'package:favorite_places/providers/user_places.dart';
+import 'package:favorite_places/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,9 +54,9 @@ class _AddItemScreen extends ConsumerState<AddItemScreen> {
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.onBackground),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 10),
+              const ImageInput(),
+              const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: _saveItem,
                 icon: const Icon(Icons.add),
