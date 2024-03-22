@@ -1,7 +1,7 @@
 import 'package:favorite_places/providers/user_places.dart';
 import 'package:favorite_places/widgets/image_input.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddItemScreen extends ConsumerStatefulWidget {
@@ -16,12 +16,20 @@ class AddItemScreen extends ConsumerStatefulWidget {
 class _AddItemScreen extends ConsumerState<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   var _enteredTitle = '';
+  File? _selectedImage;
 
   void _saveItem() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      ref.read(favoritePlacesProvider.notifier).addFavoritePlace(_enteredTitle);
+      if (_selectedImage == null) {
+        return;
+      }
+
+      ref.read(favoritePlacesProvider.notifier).addFavoritePlace(
+            _enteredTitle,
+            _selectedImage!,
+          );
 
       Navigator.pop(context);
     }
@@ -55,7 +63,11 @@ class _AddItemScreen extends ConsumerState<AddItemScreen> {
                     color: Theme.of(context).colorScheme.onBackground),
               ),
               const SizedBox(height: 10),
-              const ImageInput(),
+              ImageInput(
+                onPickImage: (image) {
+                  _selectedImage = image;
+                },
+              ),
               const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: _saveItem,
