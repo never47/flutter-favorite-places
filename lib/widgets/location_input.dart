@@ -1,8 +1,16 @@
+import 'package:favorite_places/modal/place.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({
+    required this.onSelectLocation,
+    super.key,
+  });
+
+  final void Function(PlaceLocation) onSelectLocation;
 
   @override
   State<LocationInput> createState() {
@@ -11,8 +19,18 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInput extends State<LocationInput> {
-  Location? _pickedLocation;
+  PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
+
+  String get locationImage {
+    if (_pickedLocation == null) {
+      return '';
+    }
+    final lon = _pickedLocation!.longitude;
+    final lat = _pickedLocation!.latitude;
+
+    return 'https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=600&height=300&center=lonlat:$lon,$lat&zoom=18&apiKey=e8fad2e9672643bf8a68bd94a243454d';
+  }
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -42,13 +60,31 @@ class _LocationInput extends State<LocationInput> {
     });
 
     locationData = await location.getLocation();
+    final lat = locationData.latitude;
+    final lng = locationData.longitude;
+
+    if (lat == null || lng == null) {
+      return;
+    }
+
+    final url = Uri.parse(
+      'https://api.geoapify.com/v1/geocode/reverse?lat=$lat&lon=$lng&apiKey=e8fad2e9672643bf8a68bd94a243454d',
+    );
+
+    final response = await http.get(url);
+    final resData = json.decode(response.body);
+    final address = resData['features'][0]['properties']['formatted'];
 
     setState(() {
+      _pickedLocation = PlaceLocation(
+        latitude: lat,
+        longitude: lng,
+        address: address,
+      );
       _isGettingLocation = false;
     });
 
-    print(locationData.longitude);
-    print(locationData.latitude);
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   @override
@@ -63,6 +99,15 @@ class _LocationInput extends State<LocationInput> {
 
     if (_isGettingLocation) {
       previewContent = const CircularProgressIndicator();
+    }
+
+    if (_pickedLocation != null) {
+      previewContent = Image.network(
+        locationImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
     }
 
     return Column(

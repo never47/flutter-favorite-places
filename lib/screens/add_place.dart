@@ -1,3 +1,4 @@
+import 'package:favorite_places/modal/place.dart';
 import 'package:favorite_places/providers/user_places.dart';
 import 'package:favorite_places/widgets/image_input.dart';
 import 'package:favorite_places/widgets/location_input.dart';
@@ -18,19 +19,19 @@ class _AddItemScreen extends ConsumerState<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   var _enteredTitle = '';
   File? _selectedImage;
+  PlaceLocation? _selectedLocation;
 
   void _saveItem() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      if (_selectedImage == null) {
+      if (_selectedImage == null || _selectedLocation == null) {
         return;
       }
 
-      ref.read(favoritePlacesProvider.notifier).addFavoritePlace(
-            _enteredTitle,
-            _selectedImage!,
-          );
+      ref
+          .read(favoritePlacesProvider.notifier)
+          .addFavoritePlace(_enteredTitle, _selectedImage!, _selectedLocation!);
 
       Navigator.pop(context);
     }
@@ -70,7 +71,9 @@ class _AddItemScreen extends ConsumerState<AddItemScreen> {
                 },
               ),
               const SizedBox(height: 10),
-              LocationInput(),
+              LocationInput(onSelectLocation: (location) {
+                _selectedLocation = location;
+              }),
               const SizedBox(height: 15),
               ElevatedButton.icon(
                 onPressed: _saveItem,

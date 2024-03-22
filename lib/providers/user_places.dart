@@ -5,10 +5,18 @@ import 'dart:io';
 class FavoritePlacesNotifier extends StateNotifier<List<Place>> {
   FavoritePlacesNotifier() : super(const []);
 
-  void addFavoritePlace(String title, File image) {
+  void addFavoritePlace(
+    String title,
+    File image,
+    PlaceLocation placeLocation,
+  ) {
     state = [
       ...state,
-      Place(title: title, image: image),
+      Place(
+        title: title,
+        image: image,
+        placeLocation: placeLocation,
+      ),
     ];
   }
 }
